@@ -1,5 +1,6 @@
-from flask import Flask, render_template, redirect, url_for
-from models import db, Room
+from flask import Flask, render_template, redirect, url_for, request, url_for
+from models import db, Room, Booking
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://kaidashova:123456789@localhost:5432/student_rooms'
@@ -11,10 +12,20 @@ db.init_app(app)
 def home():
     rooms = Room.query.all()
     return render_template('index.html', rooms = rooms)
-@app.route('/book/<int:room_id>', methods=['POST'])
-def book(room_id):
-    room = Room.query.get_or_404(room_id)
-    if room.occupancy < room.capacity:
-        room.occupancy +=1
-        db.session.commit()
+
+@app.route('/book', methods=['POST'])
+def book():
+    room_id = int(request.form['room_id'])
+    start = datetime.fromisoformat(request.form['start'])
+    end= datetime.fromisoformat(request.form['end'])
+
+    
+    
+    # Create booking
+    new_booking = Booking(room_id = room_id, start_time= start, end_time= end)
+    db.session.add(new_booking)
+    db.session.commit()
     return redirect(url_for('home'))
+
+
+    
