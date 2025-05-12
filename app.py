@@ -20,21 +20,24 @@ def book():
     end= datetime.fromisoformat(request.form['end'])
     
 
-    overlapping = Booking.query.filter(
+    overlapping_count = Booking.query.filter(
         Booking.room_id == room_id,
         Booking.end_time > start,   
         Booking.start_time < end    
-    ).first()
+    ).count()
 
-    if overlapping:
-        return f'This time slot is already booked for Room {room_id}!', 400
+    room = Room.query.get_or_404(room_id)
+    if overlapping_count <room.capacity:
+        # Create booking
+        new_booking = Booking(room_id = room_id, start_time= start, end_time= end)
+        db.session.add(new_booking)
+        db.session.commit()
+        return redirect(url_for('home'))
+    else:
+        return 'Room is full for that time, choose another one', 400
 
     
-    # Create booking
-    new_booking = Booking(room_id = room_id, start_time= start, end_time= end)
-    db.session.add(new_booking)
-    db.session.commit()
-    return redirect(url_for('home'))
+    
 
 
     
