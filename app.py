@@ -19,11 +19,11 @@ def book():
     start = datetime.fromisoformat(request.form['start'])
     end= datetime.fromisoformat(request.form['end'])
     
-    # 1. Check for overlapping bookings
+
     overlapping = Booking.query.filter(
         Booking.room_id == room_id,
-        Booking.end_time > start,   # Existing booking ends *after* requested start
-        Booking.start_time < end    # Existing booking starts *before* requested end
+        Booking.end_time > start,   
+        Booking.start_time < end    
     ).first()
 
     if overlapping:
