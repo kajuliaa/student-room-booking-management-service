@@ -1,5 +1,6 @@
-from flask import Flask, render_template
-from models import db
+from flask import Flask, render_template, redirect, url_for, request, url_for
+from models import db, Room, Booking
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://kaidashova:123456789@localhost:5432/student_rooms'
@@ -9,4 +10,35 @@ db.init_app(app)
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    rooms = Room.query.all()
+    return render_template('index.html', rooms = rooms)
+
+@app.route('/book', methods=['POST'])
+def book():
+    room_id = int(request.form['room_id'])
+    start = datetime.fromisoformat(request.form['start'])
+    end= datetime.fromisoformat(request.form['end'])
+    
+
+    overlapping_count = Booking.query.filter(
+        Booking.room_id == room_id,
+        Booking.end_time > start,   
+        Booking.start_time < end    
+    ).count()
+
+    # Check if there are free places and booking the next one
+    room = Room.query.get_or_404(room_id)
+    if overlapping_count <room.capacity:
+        # Create booking
+        new_booking = Booking(room_id = room_id, start_time= start, end_time= end)
+        db.session.add(new_booking)
+        db.session.commit()
+        return redirect(url_for('home'))
+    else:
+        return 'Room is full for that time, choose another one', 400
+
+    
+    
+
+
+    
