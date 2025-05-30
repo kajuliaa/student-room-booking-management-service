@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Room Booking</title>
+</head>
+<body>
+   <!-- <h1>Available Rooms</h1>
+    <ul>
+        {% for room in rooms %}
+            <li>
+                <strong>{{ room.name }}</strong>:
+                {{ room.occupancy }}/{{ room.capacity }}
+                {% if room.occupancy < room.capacity %}
+                    <form method="post" action="/book/{{ room.id }}">
+                        <button type="submit">Book</button>
+                    </form>
+                {% else %}
+                    <span style="color:red;">Full</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>    -->
+    <h2>Book a room</h2>
+    <form action = "/book", method ="POST">
+        <label for = 'room_id'>Room:</label>
+        <select name="room_id">
+            {% for room in rooms %}
+            <option value="{{room.id}}">{{room.name}}</option>
+            {% endfor %}
+        </select><br>
+        <label for="start">Start Time:</label>
+        <input type="datetime-local" name="start" required> <br>
+        <label for="end">End Time:</label>
+        <input type="datetime-local" name="end" required> <br>
+        <input type="submit" value="Book">
+    </form>
+</body>
+</html>
