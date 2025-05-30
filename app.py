@@ -26,6 +26,7 @@ def book():
         Booking.start_time < end    
     ).count()
 
+    # Check if there are free places and booking the next one
     room = Room.query.get_or_404(room_id)
     if overlapping_count <room.capacity:
         # Create booking
