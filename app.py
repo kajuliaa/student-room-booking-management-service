@@ -10,6 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
+app.secret_key = 'super-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://kaidashova:123456789@localhost:5432/student_rooms'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
@@ -31,10 +32,15 @@ def register():
         email = request.form['email']
         password = generate_password_hash(request.form['password'])
 
-        user = User(name=name, email=email, password=password)
-        db.session.add(user)
-        db.session.commit()
-        return redirect(url_for('login'))
+        try:
+            user = User(name=name, email=email, password=password)
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('login'))
+        except Exception as e:
+            db.session.rollback()
+            print('Error during regestration', e)
+            return 'Regestration failed', 500
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
