@@ -30,7 +30,32 @@
                 {% endfor %}
             ],
             nowIndicator: true,
-            selectable: false,
+            selectable: true,
+            select: function(info){
+                const start = info.startStr;
+                const end = info.endStr;
+
+                if (confirm(`Book this room from ${start} to ${end}?`)){
+                    fetch('/book', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                        room_id: '{{ room.id }}',
+                        start: start,
+                        end: end
+                    })
+                    }).then(response => {
+                        if (response.ok){
+                            location.reload();
+
+                        }else{
+                            alert('Booking failed')
+                        }
+                    })
+                }
+            }
         });
 
         calendar.render()
