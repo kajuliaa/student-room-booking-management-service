@@ -1,47 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Student Room Booking</title>
-</head>
-<body>
-   <!-- <h1>Available Rooms</h1>
-    <ul>
-        {% for room in rooms %}
-            <li>
-                <strong>{{ room.name }}</strong>:
-                {{ room.occupancy }}/{{ room.capacity }}
-                {% if room.occupancy < room.capacity %}
-                    <form method="post" action="/book/{{ room.id }}">
-                        <button type="submit">Book</button>
-                    </form>
-                {% else %}
-                    <span style="color:red;">Full</span>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>    -->
-    <div style="background-color: #f0f0f0; padding: 10px;">
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+{% block title %}Available Rooms{% endblock %}
+{% block content %}
+<h2 class="text-3xl font-bold mb-6">Available Rooms</h2>
+<div class="grid md:grid-cols-3 gap-6">
+    {% for room in rooms %}
+    <div class="bg-white shadow rounded-lg p-4">
+        <h3 class="text-xl font-semibold">Room {{ room.id }}</h3>
+        <p class="text-gray-600 mb-2">Capacity: {{ room.capacity }}</p>
+
         {% if current_user.is_authenticated %}
-            Hello, {{ current_user.name }} |
-            <a href="{{ url_for('logout') }}">Logout</a>
+        <form method="POST" action="{{ url_for('book') }}" class="space-y-2">
+            <input type="hidden" name="room_id" value="{{ room.id }}">
+            <div>
+                <label class="block text-sm font-medium">Start</label>
+                <input type="datetime-local" name="start" class="w-full border rounded px-2 py-1" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium">End</label>
+                <input type="datetime-local" name="end" class="w-full border rounded px-2 py-1" required>
+            </div>
+            <button type="submit" class="w-full bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">Book</button>
+        </form>
         {% else %}
-            <a href="{{ url_for('login') }}">Login</a> |
-            <a href="{{ url_for('register') }}">Register</a>
+        <a href="{{ url_for('login') }}" class="text-indigo-500 hover:underline">Login to Book</a>
         {% endif %}
     </div>
-    <h2>Book a room</h2>
-    <form action = "/book", method ="POST">
-        <label for = 'room_id'>Room:</label>
-        <select name="room_id">
-            {% for room in rooms %}
-            <option value="{{room.id}}">{{room.name}}</option>
-            {% endfor %}
-        </select><br>
-        <label for="start">Start Time:</label>
-        <input type="datetime-local" name="start" required> <br>
-        <label for="end">End Time:</label>
-        <input type="datetime-local" name="end" required> <br>
-        <input type="submit" value="Book">
-    </form>
-</body>
-</html>
+    {% endfor %}
+</div>
+{% endblock %}
