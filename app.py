@@ -89,6 +89,14 @@ def book():
     else:
         return 'Room is full for that time, choose another one', 400
 
+# root for calender
+@app.route('/room/<int:room_id>')
+@login_required
+def room_calendar(room_id):
+    room = Room.query.get_or_404(room_id)
+    bookings = Booking.query.filter_by(room_id=room_id).all()
+    return render_template('room_calendar.html', room = room, bookings = bookings)
+
 if __name__ == '__main__':
     app.run(debug=True)
 
